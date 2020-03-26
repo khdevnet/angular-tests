@@ -1,5 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
-import { PeriodicElement } from '../store/state';
+import { PeriodicElement } from 'src/app/shared/models/periodic-element.model';
 
 @Component({
   selector: 'app-grid-sample',

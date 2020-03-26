@@ -1,6 +1,5 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { MAT_SNACK_BAR_DATA } from '@angular/material/snack-bar';
-import { PeriodicElement } from '../store/state';
 
 @Component({
   selector: 'app-element-preview',

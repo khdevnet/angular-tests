@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { Select, Store } from '@ngxs/store';
 import {
   HomeState,
-  PeriodicElement,
   GetData,
   ShowSymbolData
 } from './store/state';
@@ -10,6 +9,7 @@ import { Observable } from 'rxjs';
 import { withLatestFrom } from 'rxjs/operators';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ElementPreviewComponent } from './element-preview/element-preview.component';
+import { PeriodicElement } from 'src/app/shared/models/periodic-element.model';
 
 @Component({
   selector: 'app-home',
