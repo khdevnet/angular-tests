@@ -31,7 +31,8 @@ export const mockHomeModule = <T>(shallow: Shallow<T>) => {
 
   return shallow
     .import(ngxs)
-    .don
+    .dontMock(ngxs);
+};
 ```
 
 ### When you write shallow tests create TestComponent(page) class which will contains common logic with interaction with page elements [shallow-test-component.ts]
