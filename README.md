@@ -4,7 +4,7 @@
 * Sync or Async? Does your test makes asynchronous calls? Uses XHR, Promises, Observables, etc. Is the Component using TemplateUrl or styleUrls or inline? Make sure you are using the corresponding APIs.
 * Use code coverage in CI
 * [Use Presentational and Container Components pattern](https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0)
-* Create small reusable components this will help simplify tests.
+* Create small reusable components this will help simplify tests, because you render only html tags for them.
 * Use [shallow render](https://getsaf.github.io/shallow-render/#why-not-just-use-testbed) for angular shallow component tests 
 * [Configure mocks globally for store, service, component etc..](https://github.com/khdevnet/angular-tests/blob/master/src/test.ts)
 * [Configure mocks per Module for store, service, component etc..](https://github.com/khdevnet/angular-tests/blob/master/src/app/pages/home/home.shallow.ts)
