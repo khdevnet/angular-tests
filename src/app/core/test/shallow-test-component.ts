@@ -11,8 +11,11 @@ import {
 } from '@angular/core';
 import { QueryMatch } from 'shallow-render/dist/lib/models/query-match';
 import { ComponentFixture } from '@angular/core/testing';
+import { IShallowTestComponent } from './shallow-test-component.interface';
 
-export interface IShallowTestComponent {
+export abstract class ShallowTestComponent<TTestComponent>
+  implements IShallowTestComponent {
+  shallow: Shallow<TTestComponent>;
   find: (
     cssOrDirective: string | Type<any>,
     options?:
@@ -26,32 +29,16 @@ export interface IShallowTestComponent {
   get: <TValue>(
     queryClass: Type<TValue> | InjectionToken<TValue> | AbstractType<TValue>
   ) => TValue;
-  detectChanges(): Promise<void>;
-}
-
-export abstract class ShallowTestComponent<TTestComponent>
-  implements IShallowTestComponent {
-  public shallow: Shallow<TTestComponent>;
-  public find: (
-    cssOrDirective: string | Type<any>,
-    options?:
-      | {
-          query?: string | undefined;
-        }
-      | undefined
-  ) => QueryMatch<DebugElement>;
-
-  public fixture: ComponentFixture<any>;
-  public get: <TValue>(
-    queryClass: Type<TValue> | InjectionToken<TValue> | AbstractType<TValue>
-  ) => TValue;
-  public instance: TTestComponent;
+  instance: TTestComponent;
 
   constructor(
     testComponent: Type<TTestComponent>,
-    testModule: Type<any> | ModuleWithProviders
+    testModule: Type<any> | ModuleWithProviders,
+    mockModule: <T>(shallow: Shallow<T>) => Shallow<T> = null
   ) {
-    this.shallow = new Shallow(testComponent, testModule);
+    this.shallow = mockModule
+      ? mockModule(new Shallow(testComponent, testModule))
+      : new Shallow(testComponent, testModule);
   }
 
   import(...imports: (Type<any> | ModuleWithProviders)[]): this {
@@ -59,9 +46,9 @@ export abstract class ShallowTestComponent<TTestComponent>
     return this;
   }
 
-  provideMock(providers: Provider[]): this{
+  provideMock(providers: Provider[]): this {
     this.shallow.provideMock(providers);
-    return this
+    return this;
   }
 
   dontMock(...things: any[]): this {
@@ -91,16 +78,16 @@ export abstract class ShallowTestComponent<TTestComponent>
     this.fixture.detectChanges();
   }
 
-  public destroy() {
+  destroy() {
     this.fixture.destroy();
   }
 
-  public setInputValue(element: HTMLInputElement, value: string) {
+  setInputValue(element: HTMLInputElement, value: string) {
     element.value = value;
     element.dispatchEvent(new Event('input'));
   }
 
-  public setSelectValue(element: HTMLSelectElement, value: string): void {
+  setSelectValue(element: HTMLSelectElement, value: string): void {
     if (value === '') {
       element.value = '';
     } else {
@@ -111,7 +98,7 @@ export abstract class ShallowTestComponent<TTestComponent>
     element.dispatchEvent(new Event('change'));
   }
 
-  public setMatSelectValue(element: HTMLElement, value: string): Promise<void> {
+  setMatSelectValue(element: HTMLElement, value: string): Promise<void> {
     element.click();
     this.fixture.detectChanges();
 
@@ -126,31 +113,11 @@ export abstract class ShallowTestComponent<TTestComponent>
     return this.fixture.whenStable();
   }
 
-  public getSelectValue(element: HTMLSelectElement): string {
-    const angularValue = element.value;
-    return angularValue.substring(angularValue.indexOf(' ') + 1);
-  }
-
-  public query<E>(selector: string) {
+  query<E>(selector: string) {
     return <E>this.find(selector).nativeElement;
   }
 
-  public queryAll<E>(selector: string) {
+  queryAll<E>(selector: string) {
     return <E[]>this.find(selector).map(el => el.nativeElement);
-  }
-}
-
-export abstract class ShallowComponentMock {
-  constructor(
-    private elementSelector: string,
-    private shallowComponent: IShallowTestComponent
-  ) {}
-
-  public get el(): QueryMatch<DebugElement> {
-    return this.shallowComponent.find(this.elementSelector);
-  }
-
-  protected async detectChanges(): Promise<void> {
-    await this.shallowComponent.detectChanges();
   }
 }

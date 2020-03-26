@@ -2,6 +2,7 @@ import { State, Action, StateContext, Selector } from '@ngxs/store';
 import { PeriodicElement } from 'src/app/shared/models/periodic-element.model';
 import { ElementsDataService } from 'src/app/shared/services/elements-data.service';
 import { tap } from 'rxjs/operators';
+import { Injectable } from '@angular/core';
 
 export class GetData {
   static readonly type = '[Home] GetData';
@@ -12,16 +13,20 @@ export class ShowSymbolData {
   static readonly type = '[Home] ShowSymbolData';
 }
 
-export interface HomeStateModel {
-  data: PeriodicElement[];
-  symbol: PeriodicElement;
+export class ResetSymbolData {
+  static readonly type = '[Home] ResetSymbolData';
 }
 
+export interface HomeStateModel {
+  data: PeriodicElement[];
+  element: PeriodicElement;
+}
+@Injectable()
 @State<HomeStateModel>({
   name: 'home',
   defaults: {
     data: [],
-    symbol: null
+    element: null
   }
 })
 export class HomeState {
@@ -31,8 +36,8 @@ export class HomeState {
   }
 
   @Selector()
-  static symbol(state: HomeStateModel): PeriodicElement {
-    return state.symbol;
+  static element(state: HomeStateModel): PeriodicElement {
+    return state.element;
   }
 
   constructor(private elementsDataService: ElementsDataService) {}
@@ -48,10 +53,19 @@ export class HomeState {
 
   @Action(ShowSymbolData)
   ShowSymbolData(ctx: StateContext<HomeStateModel>, action: ShowSymbolData) {
-    const state = ctx.getState();
-    ctx.setState({
-      ...state,
-      symbol: { ...state.data.find(x => x.symbol === action.payload) }
+    return this.elementsDataService.getBySymbol(action.payload).pipe(
+      tap(data => {
+        ctx.patchState({
+          element: { ...data }
+        });
+      })
+    );
+  }
+
+  @Action(ResetSymbolData)
+  ResetSymbolData(ctx: StateContext<HomeStateModel>) {
+    ctx.patchState({
+      element: null
     });
   }
 }

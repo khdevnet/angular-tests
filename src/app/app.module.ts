@@ -9,7 +9,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HeaderComponent } from './header/header.component';
 import { SharedModule } from './shared/shared.module';
 import { HomeModule } from './pages/home/home.module';
-import { HomeState } from './pages/home/store/state';
+import { HomeState } from './pages/home/store/home.state';
 
 @NgModule({
   declarations: [
