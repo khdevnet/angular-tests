@@ -1,6 +1,4 @@
 # Angular Testing Best Practices
-
-## Testing Checklist
 * [Which kind of test? Isolated, shallow or integration Test](https://www.freecodecamp.org/news/the-front-end-test-pyramid-rethink-your-testing-3b343c2bca51/).
 * [Can I use Mocks, Stubs or Spies? Dependencies should be covered by their own tests. Using them can boost your tests without losing efficacy.](https://blog.pragmatists.com/test-doubles-fakes-mocks-and-stubs-1a7491dfa3da)
 * Sync or Async? Does your test makes asynchronous calls? Uses XHR, Promises, Observables, etc. Is the Component using TemplateUrl or styleUrls or inline? Make sure you are using the corresponding APIs.
