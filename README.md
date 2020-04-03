@@ -13,6 +13,7 @@
 * Access the DOM with debugElement instead of directly calling nativeElement. This is because debugElement provides an abstraction for the underlying runtime environment. This will reduce unnecessary errors.
 * Prefer By.css instead of queryselector if you are running the app on the server as well. This is because the queryselector works only in the browser. if we are running the app on the server, this will fail. But, we have to unwrap the result to get the actual value.
 * Use Jasmine Spyon to validate if Service, Component etc.. methods are called, preffer to use .toHaveBeenCalledWith if arguments passed to method
+* [Javascript query selectors](https://www.javascripttutorial.net/javascript-dom/javascript-queryselector/)
 
 ### Configure mocks globally for store, service, component etc.. [test.ts]
 ```js
