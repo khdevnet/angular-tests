@@ -38,19 +38,7 @@ export const mockHomeModule = <T>(shallow: Shallow<T>) => {
 
 ### When you write shallow tests create TestComponent(page) class which will contains common logic with interaction with page elements [shallow-test-component.ts]
 ```js
-import { Shallow, RecursivePartial } from 'shallow-render';
-import { OverlayContainer } from '@angular/cdk/overlay';
-import { Rendering } from 'shallow-render/dist/lib/models/rendering';
-import {
-  ModuleWithProviders,
-  Type,
-  InjectionToken,
-  DebugElement,
-  AbstractType,
-  Provider
-} from '@angular/core';
-import { QueryMatch } from 'shallow-render/dist/lib/models/query-match';
-import { ComponentFixture } from '@angular/core/testing';
+
 import { IShallowTestComponent } from './shallow-test-component.interface';
 
 export abstract class ShallowTestComponent<TTestComponent>
@@ -79,60 +67,6 @@ export abstract class ShallowTestComponent<TTestComponent>
     this.shallow = mockModule
       ? mockModule(new Shallow(testComponent, testModule))
       : new Shallow(testComponent, testModule);
-  }
-
-  import(...imports: (Type<any> | ModuleWithProviders)[]): this {
-    this.shallow.import(...imports);
-    return this;
-  }
-
-  provideMock(providers: Provider[]): this {
-    this.shallow.provideMock(providers);
-    return this;
-  }
-
-  dontMock(...things: any[]): this {
-    this.shallow.dontMock(...things);
-    return this;
-  }
-
-  mock<TMock>(
-    thingToMock: Type<TMock> | InjectionToken<TMock>,
-    stubs: RecursivePartial<TMock>
-  ): this {
-    this.shallow.mock(thingToMock, stubs);
-    return this;
-  }
-
-  async render(): Promise<this> {
-    const render = await this.shallow.render();
-    this.find = render.find;
-    this.fixture = render.fixture;
-    this.get = render.get;
-    this.instance = render.instance;
-    return this;
-  }
-
-  async detectChanges(): Promise<void> {
-    await this.fixture.whenStable();
-    this.fixture.detectChanges();
-  }
-
-  destroy() {
-    this.fixture.destroy();
-  }
-
-  setInputValue(element: HTMLInputElement, value: string) {
-    element.value = value;
-    element.dispatchEvent(new Event('input'));
-  }  
-
-  query<E>(selector: string) {
-    return <E>this.find(selector).nativeElement;
-  }
-
-  queryAll<E>(selector: string) {
-    return <E[]>this.find(selector).map(el => el.nativeElement);
   }
 }
 ```
