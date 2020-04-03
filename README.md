@@ -137,3 +137,96 @@ export abstract class ShallowTestComponent<TTestComponent>
 }
 ```
 
+### Use .mock(UserService, { advancedSearch: () => of([]) }) in beforeEach to mock service for all tests
+
+```
+describe('SearchAndInfoComponent', () => {
+  let shallow: Shallow<SearchAndInfoComponent>;
+
+  beforeEach(async(() => {
+    shallow = configureAdministrationModule(new Shallow(SearchAndInfoComponent, AdministrationModule))
+      .mock(UserService, { advancedSearch: () => of([]) })
+  }));
+  ....
+}); 
+```
+
+### Use .mock(UserService, { advancedSearch: () => of([]) }) in test to mock service for specific test
+
+```
+it('should display empty search result message', async () => {
+  const page = await createTestPage(shallow
+    .mock(UserService, {
+      advancedSearch: () => of(<SearchItem[]>[])
+    }));
+
+ await page.search(<SearchCriteria>{});
+
+ expect(page.userList.el).toHaveFound(0);
+ expect(page.emptySearch).toHaveFoundOne();
+});
+```
+
+### Don't create Test data object in each Test, create emptyObject and then extends it with spread operators ({...emptyTestData, name: 'john'})
+
+```
+const emptyProfile = <ProfileView>{
+  tecComId: '',
+  logoPath: '',
+};
+
+
+it('should display add partner button and profile title', async () => {
+  const page = await shallow.render({
+    bind: {
+      showDefaultTitle: false,
+      isAlreadyFriend: false,
+      profileView: { ...emptyProfile, Id: '1234567890', general: { name: 'test' } }
+    }
+  });
+
+  expect(page.find('[data-test-id="name"]').nativeElement.textContent.trim()).toBe('test');
+});
+```
+
+### Use Jasmine spyOn to validate if Service, Component etc.. methods are called
+### Use Jasmine spyOn(page.instance, 'search').and.callThrough(); to validate if real method implementation called
+### Preffer to use .toHaveBeenCalledWith when you test method called with arguments passed to it, combine it with spread operator to avoid comparing objects by reference .toHaveBeenCalledWith({ ...searchCriteria})
+
+```
+it('should display partners list table if search successfully', async () => {
+  const page = await createTestPage(shallow
+    .mock(PartnerService, {
+      advancedSearch: () => of([<PartnerSearchItem>{}])
+    }));
+  spyOn(page.instance, 'search').and.callThrough();
+  spyOn(page.get(Store), 'dispatch').and.callThrough();
+
+  const searchCriteria = <PartnerSearchCriteria>{ name: 'test' };
+  await page.searchForMembers(searchCriteria);
+
+  expect(page.partnersList.el).toHaveFoundOne();
+  expect(page.instance.search).toHaveBeenCalledWith(searchCriteria);
+  expect(page.get(UserService).advancedSearch).toHaveBeenCalledWith(searchCriteria);
+  expect(page.get(Store).dispatch).toHaveBeenCalledWith([new AdvancedSearch(searchCriteria)]);
+});
+```
+
+### Use  instance.addPartner = jasmine.createSpyObj('EventEmitter', ['emit']); to mock and test EventEmitter has been called
+```
+it('should add user on button click', async () => {
+  const { find, instance, get} = await shallow
+    .mock(AppInsightsService, { trackEvent(name: string, properties?: any, measurements?: any): void {} })
+    .render({
+    bind: {
+      isAlreadyFriend: false,
+      profileView: { ...emptyProfile, tecComId: '1234567890' }
+    }
+  });
+  instance.addUser = jasmine.createSpyObj('EventEmitter', ['emit']);
+
+  find('[data-test-id="addUser"]').nativeElement.click();
+  expect(instance.addUser.emit).toHaveBeenCalledWith('1234567890');
+  expect(get(AppInsightsService).trackEvent).toHaveBeenCalledWith('mpv-add-user-btn-clicked');
+});
+```
